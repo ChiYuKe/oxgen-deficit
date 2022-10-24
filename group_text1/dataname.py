@@ -51,7 +51,7 @@ def CreateImg(text):
     # 画布颜色
     im = Image.new("RGB", (480, len(liens) * (fontSize + 5)), (245, 255, 250))  # 建一张新图，颜色用RGB，尺寸 750x2000，底色三个255表示纯白
     dr = ImageDraw.Draw(im)
-    # 字体样式，文章结尾我会放上连接
+    # 字体样式
     fontPath = r"C:\Windows\Fonts\STKAITI.TTF"
 
     font = ImageFont.truetype(fontPath, fontSize)
