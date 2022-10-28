@@ -13,6 +13,7 @@ url = 'https://oxygennotincluded.fandom.com/zh/wiki/%E5%85%83%E7%B4%A0'  # 请�
 Subpage = requests.get(url)  # 拼接后的url
 html = etree.HTML(Subpage.text)
 
+
 aww = input("请输入要查询的元素：")
 def href_page_text():
     href_ = html.xpath('//*[@id="mw-content-text"]/div/table/tbody/tr/td/table/tbody/tr/td/div/span/a[@title="名"]'.replace("名",f"{aww}"))
@@ -25,27 +26,7 @@ def href_page_text():
         # print(href_Subpage)
 
         return href_Subpage_text
-
-
-
 href_page_text = href_page_text()
-
-
-
-
-def massage_txt():
-    # 把源码交给bs
-    main_page_see = BeautifulSoup(href_page_text, "html.parser")
-    # 找到描述文本
-    meat_txt = main_page_see.find("meta", {"property": "og:description"}).get("content")
-
-    return meat_txt
-
-
-
-href_page_t = massage_txt()
-
-
 
 
 def massage_txt():
@@ -56,7 +37,6 @@ def massage_txt():
     return meat_txt
 
 mass_txt = massage_txt()
-
 
 
 
@@ -95,7 +75,7 @@ def line_break(line):
     return ret + '\n'
 
 
-output_str = href_page_t  # 测试字符串
+output_str = mass_txt  # 测试字符串
 output_str = line_break(output_str)
 d_font = ImageFont.truetype('C:/Windows/Fonts/simsun.ttc', CHAR_SIZE)
 lines = output_str.count('\n')  # 计算行数
