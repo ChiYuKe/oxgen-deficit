@@ -153,75 +153,7 @@ if __name__ == "__main__":
     tb[0, 0].set_text_props(color="black")
     tb[0, 1].set_text_props(color="black")
 
-# plt.show()
-# 保存图片
-plt.savefig('C:/Users/liuke/Desktop/爬虫/igA.png',dpi = 170)
+plt.show()  # 展示图片
+# plt.savefig('C:/你的/文件/保存/地址/name.png',dpi = 170)  # 保存图片
 
 
-
-
-
-
-
-
-
-
-# def massage_tag():
-#     main_page_see = BeautifulSoup(href_page_text, 'lxml')
-#     meat_guangxis = (main_page_see.select("aside div h3")[3].text)# 导热率
-#     return meat_guangxis
-
-# acsa = massage_tag()
-# print(acsa)
-
-
-
-
-
-
-
-
-
-
-# from PIL import Image, ImageFont, ImageDraw   # 引入图片，画图笔，图片字体三个库
- 
- 
-# def CreateImg(text):
-#     fontSize = 30
-#     liens = text.split('\n')
-#     #画布颜色
-#     im = Image.new("RGB", (480, len(liens)*(fontSize+5)), (245,255,250))  # 建一张新图，颜色用RGB，尺寸 750x2000，底色三个255表示纯白
-#     dr = ImageDraw.Draw(im)
-#     #字体样式，文章结尾我会放上连接
-#     fontPath = r"C:\Windows\Fonts\STKAITI.TTF"
-    
-#     font = ImageFont.truetype(fontPath, fontSize)
-#     #文字颜色
-#     dr.text((0, 0), text, font=font, fill="#0f0f0f")
-#     # im.save('output.png')
-#     im.show()
- 
- 
-# CreateImg(massage_txt())
-# CreateImg(massage_tag())
-
-
-
-
-
-# import pygame
-
-# #pygame初始化
-# pygame.init()
-
-# # 待转换文字
-# text = massage_tag()
-
-# #设置字体和字号
-# font = pygame.font.SysFont('Microsoft YaHei', 64)
-
-# #渲染图片，设置背景颜色和字体样式,前面的颜色是字体颜色
-# ftext = font.render(text, True, (65, 83, 130),(255, 255, 255))
-
-# #保存图片
-# pygame.image.save(ftext, "image.jpg")#图片保存地址
