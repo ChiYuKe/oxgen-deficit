@@ -1,4 +1,11 @@
+from cgitb import html
+# from distutils.filelist import findall
+from gettext import find
 import json
+from msilib.schema import Font
+import re
+from tkinter import font
+from unittest import result
 from webbrowser import get
 
 import requests
@@ -13,28 +20,27 @@ from bs4 import BeautifulSoup
 url = 'https://oxygennotincluded.fandom.com/zh/wiki/%E5%85%83%E7%B4%A0'  # 请求地址缺氧wiki里的元素类
 
 Subpage = requests.get(url)  # 拼接后的url
-Subpage_text = Subpage.text
+html = etree.HTML(Subpage.text)
 
-
-def href_page_text() -> str:  # 元素子内容
-    # 把源码交给bs
-    main_page_two = BeautifulSoup(Subpage_text, "html.parser")
-    # 找到span下的所有a标签
-    div_tow = main_page_two.find("table", {"class": "navbox-section"}).find_all("a", title="铝") # 找到铝
-    # print(div_tow)
-    for ii in div_tow:
+aww = input("请输入")
+def href_page_text():
+    href_ = html.xpath('//*[@id="mw-content-text"]/div/table/tbody/tr/td/table/tbody/tr/td/div/span/a[@title="名"]'.replace("名",f"{aww}"))
+    for href_a in href_:
+        href_b = href_a.xpath('./@href')[0]
         get_url_tow = 'https://oxygennotincluded.fandom.com'  # url拼接
-        href_Subpage = get_url_tow + ii.get("href", )  # 调取href下的链接并拼接url
-
+        href_Subpage = get_url_tow + href_b  # 调取href下的链接并拼接url
         href_Subpage = requests.get(href_Subpage)
         href_Subpage_text = href_Subpage.text
+        # print(href_Subpage)
+
         return href_Subpage_text
 
 
-href_page_text = href_page_text()  # 发送获取到的页面源代码
+
+href_page_text = href_page_text()
 
 
-# print(href_page_text)
+
 
 def massage_txt():
     # 把源码交给bs
@@ -59,7 +65,7 @@ Labe = massage_to()
 
 
 
-# 拿到各个分类名称
+# 拿到固体分类名称
 def massage_tag():
     main_page_see = BeautifulSoup(href_page_text, 'lxml')
     meat_specific_heat = (main_page_see.select("aside div h3")[0].string)# 比热
@@ -73,8 +79,6 @@ def massage_tag():
     meat_transition = (main_page_see.select("aside div h3")[8].string)# 高温相变温度
     meat_meat_transition2 = (main_page_see.select("aside div h3")[9].string)# 高温相变产物
     meat_max_quality = (main_page_see.select("aside div h3")[10].string)# 单格最大质量
-
-
     return (meat_specific_heat,meat_thermal_conductivity,meat_molar_mass,meat_light_absorption,
             meat_radiation,meat_hardness,meat_Classification,meat_Label,meat_transition,
             meat_meat_transition2,meat_max_quality)
@@ -93,8 +97,7 @@ k = massage_tag()[10]
 # print(d)
 
 
-
-# 拿到各个分类里面的数据
+# 拿到各个固体分类里面的数据
 def massage_tag_data():
     main_page_see = BeautifulSoup(href_page_text, 'lxml')
     meat_specific_heat = (main_page_see.select("aside div div ")[0].text)# 比热
@@ -108,8 +111,6 @@ def massage_tag_data():
     meat_transition = (main_page_see.select("aside div div")[8].text)# 高温相变温度
     meat_meat_transition2 = (main_page_see.select("aside div div")[9].text)# 高温相变产物
     meat_max_quality = (main_page_see.select("aside div div")[10].text)# 单格最大质量
-
-
     return (meat_specific_heat,meat_thermal_conductivity,meat_molar_mass,meat_light_absorption,
             meat_radiation,meat_hardness,meat_Classification,meat_Label,meat_transition,
             meat_meat_transition2,meat_max_quality)
@@ -138,9 +139,6 @@ if __name__ == "__main__":
          "数据": [l, m, n, o, p, q, r,s,t,u,v], }
 
     df = pd.DataFrame(data)
-
-
-    
     plt.rcParams["font.sans-serif"]=["SimHei"] #设置字体
     plt.rcParams["axes.unicode_minus"]=False #该语句解决图像中的“-”负号的乱码问题
     # plt.tight_layout()  # 解决绘图时上下标题重叠现象
@@ -148,15 +146,82 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(figsize=(3, 4))
     ax.axis("off")
     ax.axis("tight")
-    ax.set_title(Labe,fontsize=10,loc='center',color='blue')
-    tb = ax.table(cellText=df.values, colLabels=df.columns, bbox=[0, 0, 1, 1], )
+    ax.set_title(Labe,fontsize=20,loc='center',color='blue')  # 设置一个标题头
+    tb = ax.table(cellText=df.values,colLabels=df.columns, bbox=[0, 0, 1, 1], )
     tb[0, 0].set_facecolor("lightblue")
     tb[0, 1].set_facecolor("lightblue")
     tb[0, 0].set_text_props(color="black")
     tb[0, 1].set_text_props(color="black")
 
 # plt.show()
-#保存图片
-plt.savefig('C:/Users/liuke/Desktop/爬虫/FigA.png',dpi = 160)
+# 保存图片
+plt.savefig('C:/Users/liuke/Desktop/爬虫/igA.png',dpi = 170)
 
 
+
+
+
+
+
+
+
+
+# def massage_tag():
+#     main_page_see = BeautifulSoup(href_page_text, 'lxml')
+#     meat_guangxis = (main_page_see.select("aside div h3")[3].text)# 导热率
+#     return meat_guangxis
+
+# acsa = massage_tag()
+# print(acsa)
+
+
+
+
+
+
+
+
+
+
+# from PIL import Image, ImageFont, ImageDraw   # 引入图片，画图笔，图片字体三个库
+ 
+ 
+# def CreateImg(text):
+#     fontSize = 30
+#     liens = text.split('\n')
+#     #画布颜色
+#     im = Image.new("RGB", (480, len(liens)*(fontSize+5)), (245,255,250))  # 建一张新图，颜色用RGB，尺寸 750x2000，底色三个255表示纯白
+#     dr = ImageDraw.Draw(im)
+#     #字体样式，文章结尾我会放上连接
+#     fontPath = r"C:\Windows\Fonts\STKAITI.TTF"
+    
+#     font = ImageFont.truetype(fontPath, fontSize)
+#     #文字颜色
+#     dr.text((0, 0), text, font=font, fill="#0f0f0f")
+#     # im.save('output.png')
+#     im.show()
+ 
+ 
+# CreateImg(massage_txt())
+# CreateImg(massage_tag())
+
+
+
+
+
+# import pygame
+
+# #pygame初始化
+# pygame.init()
+
+# # 待转换文字
+# text = massage_tag()
+
+# #设置字体和字号
+# font = pygame.font.SysFont('Microsoft YaHei', 64)
+
+# #渲染图片，设置背景颜色和字体样式,前面的颜色是字体颜色
+# ftext = font.render(text, True, (65, 83, 130),(255, 255, 255))
+
+# #保存图片
+# pygame.image.save(ftext, "image.jpg")#图片保存地址
