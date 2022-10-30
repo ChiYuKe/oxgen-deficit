@@ -9,11 +9,14 @@ from nonebot.adapters import Message
 from nonebot.params import Arg, CommandArg, ArgPlainText
 from nonebot_plugin_guild_patch import GuildMessageEvent, MessageSegment
 
-import requests  # 导入requests库
+import requests  # 倒入requests库
 from lxml import etree  # 倒入lxml 库(没有这个库，pip install lxml安装)
 from bs4 import BeautifulSoup
 
+from .data import *
+
 img_path = 'file:///' + os.path.split(os.path.realpath(__file__))[0] + '/img/'
+
 
 # 发送图片时用到的函数, 返回发送图片所用的编码字符串
 def send_img(img_name):
@@ -33,9 +36,9 @@ async def handle_first_receive(matcher: Matcher, args: Message = CommandArg()):
 
 @wiki.got("wiki_", prompt="你想查询哪个元素文本呢？")
 async def handle_city(wiki_: Message = Arg(), wiki_name: str = ArgPlainText("wiki_")):
-    # if wiki_name not in ["铁", "铝"]:  # 这里举个铁和铝的例子，如果参数不符合要求，则提示用户重新输入
-    # 可以使用平台的 Message 类直接构造模板消息
-    # await wiki.reject(wiki_.template("你想查询的元素 {wiki_} 暂不支持，请重新输入！"))
+    if wiki_name not in element_name:  # 这里举个铁和铝的例子，如果参数不符合要求，则提示用户重新输入
+        # 可以使用平台的 Message 类直接构造模板消息
+        await wiki.reject(wiki_.template("你想查询的元素 {wiki_} 暂不支持，请重新输入！"))
 
     wiki_name_text = await get_weather(wiki_name)
     # await wiki.finish(wiki_name_text)
@@ -43,19 +46,16 @@ async def handle_city(wiki_: Message = Arg(), wiki_name: str = ArgPlainText("wik
     await wiki.send(send_img('comments.png'))
 
 
-
-
-
 # 在这里编写获取元素文本信息的函数
 async def get_weather(city_name: str) -> str:
     url = 'https://oxygennotincluded.fandom.com/zh/wiki/%E5%85%83%E7%B4%A0'  # 请求地址缺氧wiki里的元素类
-
     Subpage = requests.get(url)  # 拼接后的url
     html = etree.HTML(Subpage.text)
 
     def href_page_text():
         href_ = html.xpath(
-            '//*[@id="mw-content-text"]/div/table/tbody/tr/td/table/tbody/tr/td/div/span/a[@title="名"]'.replace("名", f"{city_name}"))
+            '//*[@id="mw-content-text"]/div/table/tbody/tr/td/table/tbody/tr/td/div/span/a[@title="名"]'.replace("名",
+                                                                                                                f"{city_name}"))
         for href_a in href_:
             href_b = href_a.xpath('./@href')[0]
             get_url_tow = 'https://oxygennotincluded.fandom.com'  # url拼接
@@ -80,7 +80,6 @@ async def get_weather(city_name: str) -> str:
     return a_text
 
 
-# 得到文字制作含文字的图片
 async def get_name_img(city_name_img: str):
     LINE_CHAR_COUNT = 18 * 2  # 每行字符数：30个中文字符(=60英文字符)
     CHAR_SIZE = 50
