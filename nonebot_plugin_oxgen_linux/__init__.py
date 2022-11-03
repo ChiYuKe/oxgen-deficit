@@ -12,6 +12,9 @@ from nonebot_plugin_guild_patch import GuildMessageEvent, MessageSegment
 import requests  # 倒入requests库
 from lxml import etree  # 倒入lxml 库(没有这个库，pip install lxml安装)
 from bs4 import BeautifulSoup
+import imgkit
+from urllib.parse import quote
+
 
 from .data import *
 
@@ -24,7 +27,7 @@ def send_img(img_name):
     return MessageSegment.image(img_path + img_name)
 
 
-wiki = on_command("wiki", rule=to_me(), aliases={"查", "查找"}, priority=5)
+wiki = on_command("wiki", aliases={"/查", "/查找"}, priority=5)
 
 
 @wiki.handle()
@@ -44,6 +47,19 @@ async def handle_city(wiki_: Message = Arg(), wiki_name: str = ArgPlainText("wik
     # await wiki.finish(wiki_name_text)
     await get_name_img(wiki_name_text)
     await wiki.send(send_img('comments.png'))
+    wiki_name_text = 'https://oxygennotincluded.fandom.com/zh/wiki/'
+    text = quote(wiki_name, 'utf-8')  # 对中文进行编码
+    wiki_name_text_ = wiki_name_text + text  # url拼接
+    path = '/nb2/src/plugins/nonebot_plugin_oxgen/img/啊啊啊.png'
+    await wiki.send("请等一下子哦,正在获取详细数据")
+    try:
+        await get_we(wiki_name_text_)
+    except:
+        await wiki.send("哦呦，出错了")
+
+    await wiki.send(send_img('啊啊啊.png'))
+    if os.path.exists(path):
+        os.remove(path)
 
 
 # 在这里编写获取元素文本信息的函数
@@ -67,7 +83,7 @@ async def get_weather(city_name: str) -> str:
             return href_Subpage_text
 
     href_page_text = href_page_text()
-    await asyncio.sleep(5)
+    # await asyncio.sleep(5)
 
     def massage_txt():
         # 把源码交给bs
@@ -126,3 +142,29 @@ async def get_name_img(city_name_img: str):
     # image.show()  # 直接显示图片
     image.save('/nb2/src/plugins/nonebot_plugin_oxgen/img/comments.png', 'PNG')  # 保存在当前路径下，格式为PNG
     image.close()
+    
+    
+    
+htmlStr_ = '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{}
+</body>
+</html>'''
+
+# # 在这里编写获取元素文本信息的函数
+async def get_we(ci_name: str):
+    rsp = requests.get(url=ci_name)
+    HTML = etree.HTML(rsp.text)
+
+    content = HTML.xpath('//aside[@role="region"]')[0]
+    html = etree.tostring(content, encoding='utf-8').decode('utf-8')
+    htmlStr = htmlStr_.format(html)
+    path_ = '/nb2/src/plugins/nonebot_plugin_oxgen/img/啊啊啊.png'
+    config2 = imgkit.config(wkhtmltoimage='/usr/local/bin/wkhtmltoimage')
+    imgkit.from_string(htmlStr, path_, config=config2)
