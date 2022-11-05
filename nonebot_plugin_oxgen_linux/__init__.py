@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 from nonebot import on_command
 from nonebot.rule import to_me
 from nonebot.matcher import Matcher
-from nonebot.adapters import Message
+from nonebot.adapters import Message,Bot, Event
 from nonebot.params import Arg, CommandArg, ArgPlainText
 from nonebot_plugin_guild_patch import GuildMessageEvent, MessageSegment
 
@@ -45,13 +45,14 @@ async def handle_city(wiki_: Message = Arg(), wiki_name: str = ArgPlainText("wik
 
     wiki_name_text = await get_weather(wiki_name)
     # await wiki.finish(wiki_name_text)
+    await wiki.send("正在获取文本....")
     await get_name_img(wiki_name_text)
     await wiki.send(send_img('comments.png'))
     wiki_name_text = 'https://oxygennotincluded.fandom.com/zh/wiki/'
     text = quote(wiki_name, 'utf-8')  # 对中文进行编码
     wiki_name_text_ = wiki_name_text + text  # url拼接
     path = '/nb2/src/plugins/nonebot_plugin_oxgen/img/啊啊啊.png'
-    await wiki.send("请等一下子哦,正在获取详细数据")
+    await wiki.send("请等一下子哦,正在获取详细数据....")
     try:
         await get_we(wiki_name_text_)
     except:
@@ -168,3 +169,28 @@ async def get_we(ci_name: str):
     path_ = '/nb2/src/plugins/nonebot_plugin_oxgen/img/啊啊啊.png'
     config2 = imgkit.config(wkhtmltoimage='/usr/local/bin/wkhtmltoimage')
     imgkit.from_string(htmlStr, path_, config=config2)
+    
+    
+love_text_cat = on_command("查询", aliases={"查找"}, priority=5)
+
+
+@love_text_cat.handle()
+async def _(bot: Bot, event: Event):
+    msg = str(event.get_message()).strip().replace('\r\n', '').replace('\n', '').replace(' ', '')[2:]
+    if msg in xdw:
+        await love_text_cat.send(send_img('小动物特性.png'))
+    if msg in xdw1:
+        await love_text_cat.send(send_img('小动物状态.png'))
+    if msg in xdw2:
+        await love_text_cat.send(send_img('小动物列表.png'))
+    if msg in xdw3:
+        await love_text_cat.send(send_img('复制人状态.png'))
+    if msg in xdw4:
+        await love_text_cat.send(send_img('复制人特质.png'))
+    if msg in xdw5:
+        await love_text_cat.send(send_img('复制人表情.png'))
+    if msg in xdw6:
+        await love_text_cat.send(send_img('复制人技能.png'))
+    if msg in xdw7:
+        await love_text_cat.send(send_img('装备.png'))
+
