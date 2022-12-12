@@ -35,25 +35,28 @@ async def handle_first_receive(matcher: Matcher, args: Message = CommandArg()):
 @wiki.got("wiki_", prompt="你想查询哪个物品呢？")
 async def handle_secondary_receive(wiki_: Message = Arg(), wiki_name: str = ArgPlainText("wiki_")):
     index = await get_index(wiki_name)
-    if wiki_name not in index:  # 这里举个铁和铝的例子，如果参数不符合要求，则提示用户重新输入
+    if wiki_name not in index:  # 这抱歉你要查里 举个铁和铝的例子，如果参数不符合要求，则提示用户重新输入
         # 可以使用平台的 Message 类直接构造模板消息
-        await wiki.finish("抱歉你要查找的不存在,你要找的可能是:" + index)
+        await wiki.finish("你要找的不存在,你要找的可能是:" + index)
     basic_link = 'https://oxygennotincluded.fandom.com/zh/wiki/'
     text = quote(wiki_name, 'utf-8')  # 对中文进行编码
     after_splicing_link = basic_link + text  # url拼接
     await wiki.send("猫猫正在努力查找中....")
     await asyncio.sleep(1)
+    
     try:
         await get_screenshot(after_splicing_link)
-    except 0:
-        pass
-    time.sleep(1)
+    except Exception as e:
+        logger.opt(colors=True, exception=e).error(
+        f"请求失败: <r>HTTP{response.status_code}</r> {response.text}"
+    )
+    await wiki.send("原文链接:" + "\n" + after_splicing_link)
+    await asyncio.sleep(1)
     await wiki.send(send_img('0_0.png'))
     # 检查指定的路径是否存在，如果存在，它将删除该路径对应的文件或目录
-    path = r'C:\Users\29025\Desktop\Cat_Bot\mybot\src\plugins\nonebot_plugin_oxgen\img\0_0.png'
+    path = r'/nb2/src/plugins/nonebot_plugin_oxgen/img/0_0.png'
     if os.path.exists(path):
         os.remove(path)
-    await wiki.finish("原文链接:" + "\n" + after_splicing_link)
 
 
 async def get_index(key: str):
